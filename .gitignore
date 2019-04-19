@@ -1,0 +1,8 @@
+.pydevproject
+.settings
+.project
+.idea
+*.pyc
+logs/
+static/
+out/
