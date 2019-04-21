@@ -3,6 +3,8 @@ package com.ownutils;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileFormat {
 
@@ -14,6 +16,7 @@ public class FileFormat {
 
     private Base256 base256 = null;
 
+
     public FileFormat() {
         this.base256 = new Base256();
     }
@@ -21,22 +24,33 @@ public class FileFormat {
     public void list_file(String root_path, boolean isEncode){
 
         File filelist = new File(root_path);
-        if (filelist.listFiles().length > 0){
-            for(int i=0; i<filelist.listFiles().length; i++){
+        if (filelist != null && filelist.listFiles().length > 0){
+
+            List<EncodeFile> encodeFileList = new ArrayList<>();
+            for (File file :filelist.listFiles()){
+                EncodeFile encodeFile = new EncodeFile();
+                encodeFile.setName(file.getName());
+                encodeFile.setPath(file.getParent());
+                encodeFile.setFullpath(file.getAbsolutePath());
+                encodeFileList.add(encodeFile);
+            }
+
+            for(int i=0; i<encodeFileList.size(); i++){
                 if (isEncode){
-                    encodeFile(filelist.listFiles()[i], i);
+                    encodeFile(encodeFileList.get(i), i+1);
                 } else {
-                    decodeFile(filelist.listFiles()[i], i);
+                    decodeFile(encodeFileList.get(i), i+1);
                 }
+
             }
         }
     }
 
-    private boolean interchangeFile(File file){
+    private boolean interchangeFile(EncodeFile file){
 
         try {
             //交换文件头尾内容
-            RandomAccessFile frandom = new RandomAccessFile(file, "rw");
+            RandomAccessFile frandom = new RandomAccessFile(file.getFullpath(), "rw");
             int switch_size = DEFAULT_SWITCH_SIZE;
             if(frandom.length() < 2*DEFAULT_SWITCH_SIZE){
                 switch_size = (int)(frandom.length()/2);
@@ -64,7 +78,7 @@ public class FileFormat {
 
 
 
-    public void encodeFile(File file, int index){
+    public void encodeFile(EncodeFile file, int index){
 
         if (file.getName().endsWith(ENCODE_TAG)){
             return;
@@ -79,21 +93,24 @@ public class FileFormat {
                 System.out.println(file.getName());
                 System.out.println("newFileName: " + newFileName);
 
-                String newPath = file.getParent() + File.separator + newFileName ;
-                boolean result =  file.renameTo(new File(newPath));
+                String newPath = file.getPath() + File.separator + newFileName ;
+                boolean result =  new File(file.fullpath).renameTo(new File(newPath));
                 System.out.println(result + " ==》 " + file.getName());
                 System.out.println("\r\n");
-
+                if(!result){
+                    interchangeFile(file);
+                }
             }catch (Exception e){
-                e.getStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     }
 
 
-    public void decodeFile(File file, int index){
+    public void decodeFile(EncodeFile file, int index){
 
         if (!file.getName().endsWith(ENCODE_TAG) || file.getName().length() < 8){
+            System.out.println("falsefile: " + file.getName());
             return;
         }
 
@@ -104,17 +121,49 @@ public class FileFormat {
                 System.out.println(file.getName());
                 System.out.println("newFileName: " + newFileName);
 
-                String newPath = file.getParent() + File.separator + newFileName;
-                boolean result =  file.renameTo(new File(newPath));
+                String newPath = file.getPath() + File.separator + newFileName;
+                boolean result =  new File(file.fullpath).renameTo(new File(newPath));
                 System.out.println(result + " --> " + file.getName());
                 System.out.println("\r\n");
+                if(!result){
+                    interchangeFile(file);
+                }
             }catch (Exception e){
-                e.getStackTrace();
+                System.out.println(e.getMessage());
             }
         }
 
     }
 
+    private class EncodeFile{
+        String name;
+        String path;
+        String fullpath;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public String getFullpath() {
+            return fullpath;
+        }
+
+        public void setFullpath(String fullpath) {
+            this.fullpath = fullpath;
+        }
+    }
 
     public static void main(String[] args) {
 
