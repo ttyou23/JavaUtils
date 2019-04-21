@@ -1,5 +1,7 @@
 package com.ownutils;
 
+import java.io.UnsupportedEncodingException;
+
 public class Base64 {
 
     //Constructor
@@ -9,13 +11,13 @@ public class Base64 {
 
     private static final String base64Code= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-    public static String encode(String srcStr) {
+    public static String encode(String srcStr) throws UnsupportedEncodingException {
         //有效值检查
         if(srcStr == null || srcStr.length() == 0) {
             return srcStr;
         }
         //将明文的ASCII码转为二进制位字串
-        char[] srcStrCh= srcStr.toCharArray();
+        byte[] srcStrCh= srcStr.getBytes("utf-8");
         StringBuilder asciiBinStrB= new StringBuilder();
         String asciiBin= null;
         for(int i= 0; i< srcStrCh.length; i++) {
@@ -55,7 +57,7 @@ public class Base64 {
         return String.valueOf(code);
     }
 
-    public static String decode(String srcStr) {
+    public static String decode(String srcStr) throws UnsupportedEncodingException {
         //有效值检查
         if(srcStr == null || srcStr.length() == 0) {
             return srcStr;
@@ -90,47 +92,28 @@ public class Base64 {
         String asciiBinStr= String.valueOf(indexBinStr);
         //将上面得到的二进制位字串分隔成字节后还原成明文
         String asciiBin= null;
-        char[] ascii= new char[asciiBinStr.length()/ 8];
+        byte[] ascii= new byte[asciiBinStr.length()/ 8];
         for(int i= 0; i< ascii.length; i++) {
             asciiBin= asciiBinStr.substring(0, 8);
             asciiBinStr= asciiBinStr.substring(8);
-            ascii[i]= (char)Integer.parseInt(asciiBin, 2);
+            ascii[i]= (byte) Integer.parseInt(asciiBin, 2);
         }
-        return String.valueOf(ascii);
+        return new String(ascii, "utf-8");
     }
 
 
 
     public static void main(String[] args) {
-//        System.out.print(encode("I like your long long shadow.It just seems you are unhappy to say goodbye to me."));
-//        System.out.print("\n---dokio---\n");
-//        System.out.print(decode("SSBsaWtlIHlvdXIgbG9uZyBsb25nIHNoYWRvdy5JdCBqdXN0IHNlZW1zIHlvdSBhcmUgdW5oYXBweSB0byBzYXkgZ29vZGJ5ZSB0byBtZS4="));
-//        System.out.print("\n---dokio---\n");
-//        System.out.print(decode(encode("I like your long long shadow.It just seems you are unhappy to say goodbye to me.")));
-
-
         try {
-            String data = "、。市解放路砥砺奋进的双流佛挡杀佛绝对是个大发多少多少房贷.txt";
-            char[] srcStrCh= data.toCharArray();
-            char[] newStrCh = new char[srcStrCh.length];
-            StringBuffer buffer = new StringBuffer();
-            for (int i=0; i<srcStrCh.length; i++){
-                newStrCh[i] = (char)((int)srcStrCh[i] + 1);
-                buffer.append((int)srcStrCh[i] + " ");
-            }
-            System.out.println(buffer.toString());
-            System.out.println(String.valueOf(newStrCh));
-            byte[] bytes = data.getBytes("GBK");
-            System.out.println(bytes.length);
+            System.out.print(encode("I like your long long shadow.It just seems you are unhappy to say goodbye to me."));
+            System.out.print("\n---dokio---\n");
+            System.out.print(decode("SSBsaWtlIHlvdXIgbG9uZyBsb25nIHNoYWRvdy5JdCBqdXN0IHNlZW1zIHlvdSBhcmUgdW5oYXBweSB0byBzYXkgZ29vZGJ5ZSB0byBtZS4="));
+            System.out.print("\n---dokio---\n");
+            System.out.print(decode(encode("I like your long long shadow.It just seems you are unhappy to say goodbye to me.")));
         }catch (Exception e){
             e.getStackTrace();
         }
 
-
-
-//        System.out.println(encode);
-//        String decode = decode(encode);
-//        System.out.println(decode);
     }
 
 }
