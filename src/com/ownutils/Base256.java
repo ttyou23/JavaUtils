@@ -40,7 +40,7 @@ public class Base256 {
 
         try {
             Base256 se=new Base256();
-            String data = "Sky High Ent. 空天使第115號 Sky Angel Vol.115 三村ちな(China Mimura) 可愛美少女天使搶先官網降臨中出 口交 性交 無碼 絲襪 性感 巨乳 美乳.avi";
+            String data = "到发的说法是对方dldlkfdsfdsf33434";
             byte[] bytes = data.getBytes("GBK");
             System.out.println(data.length());
             System.out.println(bytes.length);

@@ -11,7 +11,6 @@ public class FileFormat {
     public static final String ROOT_PATH = "D:\\test\\dos\\新建文件夹";
 
     public static final int DEFAULT_SWITCH_SIZE = 1888;
-    public static final String CHARSETNAME = "GBK";
     public static final String ENCODE_TAG = ".se";
 
     private Base256 base256 = null;
